@@ -1,0 +1,31 @@
+#default index page
+DirectoryIndex index.html
+
+#mod_rewrite on
+RewriteEngine on
+
+#Hotlinking Protection
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http(s)?://([^.]+\.)?thwaller.com/.*$ [NC]
+RewriteRule \.(js|css|jpg|gif|png|bmp|jpeg|pdf)$ - [F]
+
+#Redirect to SSL
+RewriteCond %{HTTPS} !on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+#Redirect to canonical preference
+RewriteCond %{HTTP_HOST} ^www\.thwaller\.com$ [NC]
+RewriteRule ^(.*)$ https://thwaller.com/$1 [R=301,L]
+
+#Prevent framing of site
+Header append X-FRAME-OPTIONS "DENY"
+
+#Prevent directory listings
+IndexIgnore *
+Options -Indexes
+
+#Hide the .htaccess file, should be redundant
+<Files .htaccess>
+order allow,deny
+deny from all
+</Files>
